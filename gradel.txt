@@ -1,0 +1,52 @@
+http://mvnrepository.com/    gradle仓库地址
+https://blog.csdn.net/aixiaoyang168/article/details/78027844  多项目构建
+
+一、安装配置
+	需要下载 Gradle，下载以后，解压到C:\Gradle 目录下，接着，需要配置环境变量
+	gradle 的路径配置到 Eclipse 中
+	最后，安装 Gradle 与 Eclipse 集成的插件，Eclipse把 Gradle 的插件称之为Buildship。 可以在Github上获得Buildship的源代码。
+	
+二、创建一个新的Gradle工程多项目
+	1）添加settings.gradle
+		include ’prj1'
+		include 'prj2'
+	2） build.gradle
+		subprojects{}
+		allprojects{}
+		
+三、 eclipse运行项目
+	1. 打开gradle tasks面板
+	2. 选择根项目，先运行build-setup: init , wrapper
+	    再运行build: jar，将会把各个子项目打成jar包
+	    再运行build: war，将只会把plugin为war的项目打成war包
+	3. 根项目skys/build/reports下是测试的统计网站
+	
+四、打包
+	哪个war包要部署，只需要在build.gradle中加上依赖jar项目就可以了，如：
+	apply plugin: 'war'
+	archivesBaseName = 'sky_vue'
+	dependencies{
+	    compile project(":sky-core")    
+	    compile project(":sky-portal")    
+	    compile project(":sky-system")    
+	}	
+	
+	 
+五、命令运行项目，有很多问题，不如直接eclipse方便
+	gradle wrapper --gradle-version=4.7
+	./gradlew appRun
+	
+	//功能测试, 单元测试
+	$ ./gradlew test
+
+	//执行测试，并产生报告，默认打war包位置在libs下面.
+	gradlew build
+	
+六、如果直接用springBoot的类启动：
+	SpringApplication.run(SshsApplication.class, args);
+	需要在build.gralde中包含所有的工程，那个settings.gradle是不会起作用的(此坑掉入2天才爬出来)
+	    compile project(":sky-portal")
+    compile project(":sky-core")
+    compile project(":sky-system")
+    compile project(":sky-vue")
+

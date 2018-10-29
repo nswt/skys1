@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- namespace：必须与对应的接口全类名一致 id:必须与对应接口的某个对应的方法名一致 -->
+<mapper namespace="com.sky.system.logdb.dao.LogdbDao">
+	<!-- mybsits_config中配置的alias类别名,也可直接配置resultType为类路劲 -->
+	<!--表名 -->
+	<sql id="tableName">
+		SYS_LOG_MAIN
+	</sql>
+
+	<!-- 字段 -->
+	<sql id="Field">
+		LOG_ID ,
+		DEAL_TIME ,
+		OPPER_ID ,
+		ORG_CODE ,
+		TABLE_CODE ,
+		OPPER_TYPE ,
+		OPPER_URL ,
+		TABLE_PK ,
+		OPPER_DESC
+	</sql>
+
+	<!-- 字段值 -->
+	<sql id="FieldValue">
+		#{logId},
+		#{dealTime},
+		#{opperId},
+		#{orgCode},
+		#{tableCode},
+		#{opperType},
+		#{opperUrl},
+		#{tablePk},
+		#{opperDesc}
+	</sql>
+
+	<select id="findById" parameterType="String" resultType="Logdb">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where
+		log_id=#{id}
+	</select>
+	
+	<!-- 初始化所有字典项目 -->
+	<select id="findSubsById" parameterType="String" resultType="LogdbSub">
+		select LOG_ID,
+		FIELD_NAME,
+		FIELD_CODE,
+		OLD_DATA,
+		NEW_DATA
+		from
+		SYS_LOG_SUB
+		where LOG_ID=#{logId}
+	</select>
+
+	<!-- 初始化所有日志项目 -->
+	<select id="findAll" resultType="Logdb">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName">
+		</include>
+	</select>
+
+	<select id="findForPageList" parameterType="Page" resultType="Logdb">
+		select
+		<include refid="Field"></include>
+		from
+		<include refid="tableName"></include>
+		where 1=1
+		<if test="params.opperId != null and params.opperId != ''">
+			and opper_id like CONCAT('%',#{params.opperId}, '%')
+		</if>
+		<if test="params.orgCode != null and params.orgCode != ''">
+			and org_code like CONCAT('%',#{params.orgCode}, '%')
+		</if>
+		<if test="variables.dealTime != null and variables.dealTime != ''">
+				AND deal_time = #{variables.dealTime}
+		</if>	
+	</select>
+</mapper>
